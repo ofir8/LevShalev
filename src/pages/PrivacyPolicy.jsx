@@ -1,18 +1,30 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Home } from 'lucide-react';
 
 const PrivacyPolicy = () => {
+    // Scroll to top on mount
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     return (
         <div dir="rtl" className="font-sans text-slate-800 bg-slate-50 min-h-screen">
-            <div className="container mx-auto px-6 py-12 max-w-4xl">
-                <Link to="/" className="inline-flex items-center text-sky-600 hover:text-sky-700 mb-8 transition-colors font-medium">
-                    <ChevronLeft className="w-5 h-5 ml-1" />
-                    חזרה לדף הבית
-                </Link>
+            {/* Fixed Header Strip */}
+            <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md border-b border-slate-200">
+                <div className="container mx-auto px-6 py-4 flex items-center justify-between max-w-4xl">
+                    <h1 className="text-xl md:text-2xl font-bold text-slate-900">מדיניות פרטיות</h1>
+                    <Link to="/" className="inline-flex items-center gap-2 text-sky-600 hover:text-sky-700 transition-colors font-medium bg-sky-50 hover:bg-sky-100 px-4 py-2 rounded-full">
+                        <Home className="w-4 h-4" />
+                        <span className="hidden md:inline">חזרה לדף הבית</span>
+                        <span className="md:hidden">בית</span>
+                    </Link>
+                </div>
+            </div>
+
+            <div className="container mx-auto px-6 pt-24 pb-12 max-w-4xl">
 
                 <div className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-xl border border-slate-100">
-                    <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-8 border-b pb-6">מדיניות פרטיות</h1>
 
                     <div className="space-y-6 text-lg text-slate-600 leading-relaxed">
                         <p>
