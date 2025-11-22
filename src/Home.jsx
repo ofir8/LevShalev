@@ -612,7 +612,7 @@ export default function App() {
             <img
               src="logo.svg"
               alt="Lev Shalev Logo"
-              className={`h-12 w-auto transition-all duration-500 ${!isScrolled ? 'brightness-0 invert' : ''}`}
+              className={`h-10 md:h-12 w-auto transition-all duration-500 ${!isScrolled ? 'brightness-0 invert' : ''}`}
             />
           </div>
 
@@ -692,7 +692,7 @@ export default function App() {
         <div className="container mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center">
           <div className="md:w-1/2 mb-16 md:mb-0 text-center md:text-right">
             <Reveal direction="up" delay={100}>
-              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-sky-100 px-4 py-1.5 rounded-full text-sm font-medium mb-8 border border-white/10">
+              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md text-sky-100 px-4 py-1.5 rounded-full text-xs md:text-sm font-medium mb-8 border border-white/10 mx-auto md:mx-0">
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
                 שירותי סיעוד ואחיות עד הבית
               </div>
@@ -722,7 +722,7 @@ export default function App() {
           </div>
 
           {/* Hero Image / Illustration */}
-          <div className="md:w-1/2 flex justify-center relative w-full">
+          <div className="md:w-1/2 flex justify-center relative w-full px-4 md:px-0">
             <Reveal direction="left" delay={500} className="w-full max-w-lg">
               <div className="relative">
                 {/* Main Card */}
@@ -757,7 +757,7 @@ export default function App() {
         </div>
 
         {/* Scroll Indicator */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center animate-bounce cursor-pointer" onClick={() => scrollToSection('about')}>
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 hidden md:flex flex-col items-center animate-bounce cursor-pointer" onClick={() => scrollToSection('about')}>
           <span className="text-sky-200 text-xs font-medium mb-2 tracking-widest uppercase opacity-80">גלול למטה</span>
           <ChevronDown className="w-6 h-6 text-white" />
         </div>
