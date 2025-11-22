@@ -269,7 +269,7 @@ const Carousel = ({ images, interval = 5000 }) => {
   }, [images.length, interval]);
 
   return (
-    <div className="relative w-full h-[600px] overflow-hidden group">
+    <div className="relative w-full h-[400px] md:h-[600px] overflow-hidden group">
       {images.map((image, index) => (
         <div
           key={index}
@@ -726,22 +726,22 @@ export default function App() {
             <Reveal direction="left" delay={500} className="w-full max-w-lg">
               <div className="relative">
                 {/* Main Card */}
-                <div className="bg-slate-900/80 p-8 rounded-[2.5rem] border border-white/10 shadow-2xl relative z-10 overflow-hidden group transition-colors duration-500">
+                <div className="bg-slate-900/80 p-4 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-white/10 shadow-2xl relative z-10 overflow-hidden group transition-colors duration-500">
                   <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                  <div className="space-y-6">
+                  <div className="space-y-3 md:space-y-6">
                     {[
                       { icon: CheckCircle, title: "זמינות גבוהה", sub: "באזור הצפון" },
                       { icon: Users, title: "צוות מוסמך", sub: "אחיות ומטפלות מנוסות" },
                       { icon: Heart, title: "יחס אישי", sub: "אמפתיה ללא פשרות" }
                     ].map((item, i) => (
-                      <div key={i} className="flex gap-5 items-center p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
-                        <div className="w-14 h-14 bg-sky-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-sky-900/20">
-                          <item.icon size={28} />
+                      <div key={i} className="flex gap-3 md:gap-5 items-center p-3 md:p-4 rounded-xl md:rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                        <div className="w-10 h-10 md:w-14 md:h-14 bg-sky-500 rounded-xl md:rounded-2xl flex items-center justify-center text-white shadow-lg shadow-sky-900/20 shrink-0">
+                          <item.icon className="w-5 h-5 md:w-7 md:h-7" />
                         </div>
                         <div className="text-white">
-                          <p className="font-bold text-lg">{item.title}</p>
-                          <p className="text-sm text-sky-100/80">{item.sub}</p>
+                          <p className="font-bold text-sm md:text-lg">{item.title}</p>
+                          <p className="text-xs md:text-sm text-sky-100/80">{item.sub}</p>
                         </div>
                       </div>
                     ))}
@@ -917,21 +917,21 @@ export default function App() {
 
         <div className="container mx-auto px-6 relative z-10">
           <Reveal>
-            <div className="max-w-6xl mx-auto bg-white/5 backdrop-blur-lg rounded-[3rem] p-8 md:p-16 border border-white/10 shadow-2xl">
+            <div className="max-w-6xl mx-auto bg-white/5 backdrop-blur-lg rounded-2xl md:rounded-[3rem] p-6 md:p-16 border border-white/10 shadow-2xl">
               <div className="text-center mb-16">
-                <h2 className="text-3xl md:text-5xl font-bold mb-6">דרושים - הצטרפו לצוות שלנו</h2>
-                <p className="text-sky-100 text-lg max-w-2xl mx-auto font-light">
+                <h2 className="text-2xl md:text-5xl font-bold mb-4 md:mb-6">דרושים - הצטרפו לצוות שלנו</h2>
+                <p className="text-sky-100 text-sm md:text-lg max-w-2xl mx-auto font-light">
                   אנו מחפשים מטפלים ומטפלות מסורים להצטרף לצוות המקצועי שלנו ולהיות חלק ממשימה חשובה.
                 </p>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-16 mb-16">
+              <div className="grid md:grid-cols-2 gap-8 md:gap-16 mb-8 md:mb-16">
                 <div>
-                  <h3 className="text-2xl font-bold text-sky-300 mb-8 flex items-center gap-3">
+                  <h3 className="text-xl md:text-2xl font-bold text-sky-300 mb-4 md:mb-8 flex items-center gap-3">
                     <span className="w-8 h-1 bg-sky-500 rounded-full"></span>
                     דרישות התפקיד
                   </h3>
-                  <ul className="space-y-6 text-lg">
+                  <ul className="space-y-3 md:space-y-6 text-sm md:text-lg">
                     {[
                       "ניסיון בטיפול בקשישים - יתרון",
                       "סבלנות, אמפתיה ויחס חם",
@@ -946,11 +946,11 @@ export default function App() {
                   </ul>
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-sky-300 mb-8 flex items-center gap-3">
+                  <h3 className="text-xl md:text-2xl font-bold text-sky-300 mb-4 md:mb-8 flex items-center gap-3">
                     <span className="w-8 h-1 bg-sky-500 rounded-full"></span>
                     מה אנו מציעים?
                   </h3>
-                  <ul className="space-y-6 text-lg">
+                  <ul className="space-y-3 md:space-y-6 text-sm md:text-lg">
                     {[
                       "שכר ותנאים מעולים",
                       "סביבת עבודה תומכת ומקצועית",
@@ -1041,18 +1041,18 @@ export default function App() {
 
           <Reveal delay={200} direction="up">
             <div className="grid lg:grid-cols-2 gap-0 max-w-6xl mx-auto bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100">
-              <div className="p-10 md:p-16 bg-gradient-to-br from-sky-600 to-blue-800 text-white flex flex-col justify-between relative overflow-hidden">
+              <div className="p-8 md:p-16 bg-gradient-to-br from-sky-600 to-blue-800 text-white flex flex-col justify-between relative overflow-hidden">
                 {/* Abstract shapes */}
                 <div className="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
                 <div className="absolute top-1/2 -left-24 w-64 h-64 bg-sky-400 opacity-20 rounded-full blur-3xl"></div>
 
                 <div className="relative z-10">
-                  <h3 className="text-3xl font-bold mb-8">פרטי התקשרות</h3>
-                  <p className="mb-12 text-sky-100 text-lg leading-relaxed">
+                  <h3 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8 hidden md:block">פרטי התקשרות</h3>
+                  <p className="mb-8 md:mb-12 text-sky-100 text-sm md:text-lg leading-relaxed">
                     רוצים לשמוע עוד או להזמין מטפלת/אחות עד הבית? <br />השאירו פרטים ונחזור אליכם בהקדם.
                   </p>
 
-                  <div className="space-y-8">
+                  <div className="space-y-6 md:space-y-8">
                     <div className="flex items-center gap-6 group">
                       <div className="bg-white/10 p-4 rounded-2xl backdrop-blur-sm group-hover:bg-white/20 transition-colors">
                         <Phone className="w-6 h-6" />
