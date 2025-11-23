@@ -84,7 +84,8 @@ const Button = ({ children, variant = 'primary', className = '', onClick, href, 
     primary: "bg-sky-600 text-white shadow-[0_10px_20px_-10px_rgba(2,132,199,0.5)] hover:bg-sky-700 hover:shadow-[0_15px_25px_-10px_rgba(2,132,199,0.6)]",
     secondary: "bg-white text-sky-700 border border-sky-100 shadow-sm hover:bg-sky-50 hover:border-sky-200",
     outline: "bg-transparent text-white border border-white/30 hover:bg-white/10 backdrop-blur-sm",
-    cta: "bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-lg hover:shadow-xl hover:from-sky-500 hover:to-blue-500"
+    cta: "bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-lg hover:shadow-xl hover:from-sky-500 hover:to-blue-500",
+    red: "bg-red-600 text-white shadow-[0_10px_20px_-10px_rgba(220,38,38,0.5)] hover:bg-red-700 hover:shadow-[0_15px_25px_-10px_rgba(220,38,38,0.6)]"
   };
 
   const Component = href ? 'a' : 'button';
@@ -710,7 +711,7 @@ export default function App() {
             </Reveal>
             <Reveal direction="up" delay={700}>
               <div className="flex flex-col sm:flex-row gap-5 justify-center md:justify-start">
-                <Button variant="cta" onClick={() => scrollToSection('contact')} className="text-lg px-10">
+                <Button variant="red" onClick={() => scrollToSection('contact')} className="text-lg px-10 animate-zoom-loop">
                   שיחת ייעוץ חינם
                 </Button>
                 <Button variant="outline" href="tel:0527242507" className="text-lg">

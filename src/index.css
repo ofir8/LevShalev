@@ -6,7 +6,8 @@ body {
   background-color: #f8fafc;
 }
 
-html.lenis, html.lenis body {
+html.lenis,
+html.lenis body {
   height: auto;
 }
 
@@ -24,4 +25,28 @@ html.lenis, html.lenis body {
 
 .lenis.lenis-scrolling iframe {
   pointer-events: none;
+}
+
+/* Force UserWay accessibility widget to bottom-right */
+#userway_buttons_wrapper {
+  bottom: 20px !important;
+  right: 20px !important;
+  left: auto !important;
+  top: auto !important;
+}
+
+@keyframes zoom-in-out {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.animate-zoom-loop {
+  animation: zoom-in-out 2s infinite ease-in-out;
 }
