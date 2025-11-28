@@ -816,10 +816,7 @@ export default function Home() {
             <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl group bg-slate-100 w-full mx-auto">
               <Carousel
                 images={[
-                  {
-                    src: "https://images.unsplash.com/photo-1581056771107-24ca5f033842?auto=format&fit=crop&q=80",
-                    caption: "אנחנו כאן כדי להעניק שקט נפשי למשפחה"
-                  },
+
                   {
                     src: "/images/atmosphere_1.jpg",
                     caption: "טיפול מסור ומקצועי בבית המטופל"
