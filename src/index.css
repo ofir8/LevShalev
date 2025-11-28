@@ -28,11 +28,16 @@ html.lenis body {
 }
 
 /* Force UserWay accessibility widget to bottom-right */
-#userway_buttons_wrapper {
+#userway_buttons_wrapper,
+#userway-accessibility-widget,
+.userway_buttons_wrapper {
   bottom: 20px !important;
-  right: 20px !important;
+  right: 0px !important;
   left: auto !important;
   top: auto !important;
+  position: fixed !important;
+  z-index: 9999 !important;
+  margin-bottom: 0px !important;
 }
 
 @keyframes zoom-in-out {

@@ -14,17 +14,18 @@ import {
   Clock,
   Users,
   Stethoscope,
-  Home,
+  Instagram,
+  Home as HomeIcon,
   CheckCircle,
-  MessageCircle,
-  FileText,
-  Upload,
-  Accessibility,
   ChevronDown,
-  Loader2, // Added for Preloader
+  MessageCircle,
   Facebook,
-  Instagram
+  Accessibility,
+  Upload,
+  FileText
 } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
+import { useConfig } from './context/ConfigContext';
 
 // --- GSAP-like Animation Engine (High Performance) ---
 // שימוש ב-IntersectionObserver לחשיפה חכמה ללא הכבדה על הגלילה
@@ -216,9 +217,10 @@ const FAQItem = ({ question, answer, isOpen, onClick }) => {
       <div
         className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-96 opacity-100 mb-6' : 'max-h-0 opacity-0'}`}
       >
-        <p className="text-slate-600 leading-relaxed pr-4 border-r-2 border-sky-100">
-          {answer}
-        </p>
+        <p
+          className="text-slate-600 leading-relaxed pr-4 border-r-2 border-sky-100"
+          dangerouslySetInnerHTML={{ __html: answer }}
+        />
       </div>
     </div>
   );
@@ -410,7 +412,8 @@ const ContactForm = () => {
   );
 };
 
-export default function App() {
+export default function Home() {
+  const { config, loading: configLoading } = useConfig();
   const [isLoading, setIsLoading] = useState(true); // Preloader state
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -462,27 +465,55 @@ export default function App() {
 
   // Preloader Effect
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000); // 2 seconds minimum load time for smooth feel
-
-    return () => clearTimeout(timer);
-  }, []);
-
+    if (!configLoading) {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 2000); // 2 seconds minimum load time for smooth feel
+      return () => clearTimeout(timer);
+    }
+  }, [configLoading]);
   // Performance optimized scroll detection using IntersectionObserver
   const topSentinelRef = useRef(null);
+  const [activeSection, setActiveSection] = useState('');
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         setIsScrolled(!entry.isIntersecting);
       },
-      { rootMargin: '100px 0px 0px 0px' } // Trigger slightly after scrolling
+      { threshold: 0 }
     );
 
     if (topSentinelRef.current) {
       observer.observe(topSentinelRef.current);
     }
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Track active section for menu highlighting
+  useEffect(() => {
+    const sections = ['about', 'services', 'audience', 'careers', 'faq', 'contact'];
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -70% 0px', // Trigger when section is near top
+      threshold: 0
+    };
+
+    const observerCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    sections.forEach((id) => {
+      const element = document.getElementById(id);
+      if (element) observer.observe(element);
+    });
 
     return () => observer.disconnect();
   }, []);
@@ -502,7 +533,7 @@ export default function App() {
     { icon: Syringe, title: "בדיקות דם עד הבית", description: "לקיחת דמים מקצועית וסטרילית בנוחות ביתכם, ללא צורך בהמתנה בקופת החולים." },
     { icon: Stethoscope, title: "טיפול בפצעים וחבישות", description: "טיפול מומחה בפצעי לחץ, פצעים ניתוחיים וסוכרתיים, כולל החלפת חבישות מורכבות." },
     { icon: Activity, title: "טיפול בקטטר וסטומה", description: "החלפה וטיפול בקטטר, סטומה ונפרוסטום על ידי צוות מוסמך ומיומן." },
-    { icon: Home, title: "עזרה בהיגיינה ורחצה", description: "סיוע רגיש ומכבד ברחצה, הלבשה ושמירה על היגיינה אישית יומיומית." },
+    { icon: HomeIcon, title: "עזרה בהיגיינה ורחצה", description: "סיוע רגיש ומכבד ברחצה, הלבשה ושמירה על היגיינה אישית יומיומית." },
     { icon: CheckCircle, title: "מתן תרופות וזריקות", description: "מתן זריקות, עירויים וטיפול תרופתי בהתאם להוראות רופא, תחת השגחה." },
     { icon: UserCheck, title: "ליווי והשגחה צמודה", description: "שירותי השגחה בבית או בקהילה, כולל ליווי לאחר אשפוז לתקופת ההחלמה." },
     { icon: Heart, title: "תמיכה רגשית", description: "אוזן קשבת ותמיכה רגשית למטופל ולבני המשפחה המתמודדים עם המצב." },
@@ -511,6 +542,12 @@ export default function App() {
 
   return (
     <div dir="rtl" className="font-sans text-slate-800 bg-slate-50 min-h-screen selection:bg-sky-200 selection:text-sky-900">
+      <Helmet>
+        <title>{config?.general?.siteTitle || "לב שליו - שירותי סיעוד ואחיות עד הבית"}</title>
+        <meta name="description" content={config?.general?.siteDescription || "שירותי סיעוד ואחיות מוסמכות עד הבית. זמינות 24/7, יחס אישי ומקצועי."} />
+        {config?.general?.pixels?.head && <div dangerouslySetInnerHTML={{ __html: config.general.pixels.head }} />}
+      </Helmet>
+      {config?.general?.pixels?.body && <div dangerouslySetInnerHTML={{ __html: config.general.pixels.body }} />}
 
       {/* Preloader */}
       <Preloader isLoading={isLoading} />
@@ -534,26 +571,26 @@ export default function App() {
       )}
 
       {/* Floating Action Buttons */}
-      <div className="fixed bottom-8 left-8 z-40 flex flex-col gap-4 items-center pointer-events-none">
-        <div className="pointer-events-auto flex flex-col gap-4">
+      <div className="fixed bottom-2 left-2 md:bottom-8 md:left-8 z-40 flex flex-col gap-2 md:gap-4 items-center pointer-events-none">
+        <div className="pointer-events-auto flex flex-col gap-2 md:gap-4">
           {/* WhatsApp */}
           <a
             href="https://wa.me/972527242507"
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-green-500 text-white p-3.5 rounded-full shadow-lg shadow-green-500/30 hover:bg-green-600 transition-all hover:scale-110 hover:-translate-y-1"
+            className="bg-green-500 text-white p-2 md:p-3.5 rounded-full shadow-lg shadow-green-500/30 hover:bg-green-600 transition-all hover:scale-110 hover:-translate-y-1"
             title="שלח הודעה בוואטסאפ"
           >
-            <MessageCircle className="w-5 h-5" />
+            <MessageCircle className="w-4 h-4 md:w-5 md:h-5" />
           </a>
 
           {/* Phone (Mobile Only) */}
           <a
             href="tel:0527242507"
-            className="bg-sky-600 text-white p-3.5 rounded-full shadow-lg shadow-sky-600/30 hover:bg-sky-700 transition-all hover:scale-110 hover:-translate-y-1 md:hidden"
+            className="bg-sky-600 text-white p-2 md:p-3.5 rounded-full shadow-lg shadow-sky-600/30 hover:bg-sky-700 transition-all hover:scale-110 hover:-translate-y-1 md:hidden"
             title="חייג עכשיו"
           >
-            <Phone className="w-5 h-5" />
+            <Phone className="w-4 h-4 md:w-5 md:h-5" />
           </a>
         </div>
       </div>
@@ -606,66 +643,75 @@ export default function App() {
       </Modal>
 
       {/* Navbar */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out-cubic ${isScrolled ? 'bg-white shadow-lg py-3' : 'bg-transparent py-6'
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out-cubic ${isScrolled || isMobileMenuOpen ? 'bg-white shadow-lg py-3' : 'bg-transparent py-6'
         }`}>
         <div className="container mx-auto px-6 md:px-10 flex justify-between items-center">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <img
               src="logo.svg"
               alt="Lev Shalev Logo"
-              className={`h-10 md:h-12 w-auto transition-all duration-500 ${!isScrolled ? 'brightness-0 invert' : ''}`}
+              className={`h-10 md:h-12 w-auto transition-all duration-500 ${!isScrolled && !isMobileMenuOpen ? 'brightness-0 invert' : ''}`}
             />
           </div>
 
           {/* Desktop Menu */}
           <div className={`hidden md:flex items-center gap-10 font-medium text-sm transition-colors duration-500 ${isScrolled ? 'text-slate-600' : 'text-white/90'}`}>
-            <button onClick={() => scrollToSection('about')} className="hover:text-sky-500 transition-colors relative group">
-              אודות
-              <span className="absolute -bottom-1 right-0 w-0 h-0.5 bg-sky-500 transition-all duration-300 group-hover:w-full"></span>
-            </button>
-            <button onClick={() => scrollToSection('services')} className="hover:text-sky-500 transition-colors relative group">
-              שירותים
-              <span className="absolute -bottom-1 right-0 w-0 h-0.5 bg-sky-500 transition-all duration-300 group-hover:w-full"></span>
-            </button>
-            <button onClick={() => scrollToSection('audience')} className="hover:text-sky-500 transition-colors relative group">
-              למי זה מתאים?
-              <span className="absolute -bottom-1 right-0 w-0 h-0.5 bg-sky-500 transition-all duration-300 group-hover:w-full"></span>
-            </button>
-            <button onClick={() => scrollToSection('careers')} className="hover:text-sky-500 transition-colors relative group">
-              דרושים
-              <span className="absolute -bottom-1 right-0 w-0 h-0.5 bg-sky-500 transition-all duration-300 group-hover:w-full"></span>
-            </button>
-            <button onClick={() => scrollToSection('faq')} className="hover:text-sky-500 transition-colors relative group">
-              שאלות ותשובות
-              <span className="absolute -bottom-1 right-0 w-0 h-0.5 bg-sky-500 transition-all duration-300 group-hover:w-full"></span>
-            </button>
+            {['about', 'services', 'audience', 'careers', 'faq'].map((section) => {
+              const labels = {
+                about: 'אודות',
+                services: 'שירותים',
+                audience: 'למי זה מתאים?',
+                careers: 'דרושים',
+                faq: 'שאלות ותשובות'
+              };
+              return (
+                <button
+                  key={section}
+                  onClick={() => scrollToSection(section)}
+                  className={`hover:text-sky-500 transition-colors relative group ${activeSection === section ? 'text-sky-500 font-bold' : ''}`}
+                >
+                  {labels[section]}
+                  <span className={`absolute -bottom-1 right-0 h-0.5 bg-sky-500 transition-all duration-300 ${activeSection === section ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+                </button>
+              );
+            })}
             <Button
               variant={isScrolled ? "primary" : "outline"}
               onClick={() => scrollToSection('contact')}
-              className="px-6 py-2.5 text-sm shadow-none hover:shadow-none"
+              className={`px-6 py-2.5 text-sm shadow-none hover:shadow-none ${activeSection === 'contact' ? 'ring-2 ring-sky-500 ring-offset-2' : ''}`}
             >
               צור קשר
             </Button>
           </div>
 
           {/* Mobile Menu Toggle */}
-          <button className={`md:hidden p-2 rounded-lg transition-colors ${isScrolled ? 'text-slate-800 hover:bg-slate-100' : 'text-white hover:bg-white/10'}`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+          <button className={`md:hidden p-2 rounded-lg transition-colors ${isScrolled || isMobileMenuOpen ? 'text-slate-800 hover:bg-slate-100' : 'text-white hover:bg-white/10'}`} onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
             {isMobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
           </button>
         </div>
 
         {/* Mobile Menu Dropdown */}
-        <div className={`absolute top-full left-0 w-full bg-white shadow-2xl border-t md:hidden flex flex-col overflow-hidden transition-all duration-500 ease-out-cubic ${isMobileMenuOpen ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
+        <div className={`absolute top-full left-0 w-full bg-white shadow-2xl border-t md:hidden flex flex-col overflow-hidden transition-all duration-500 ease-out-cubic ${isMobileMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
           <div className="flex flex-col p-6 gap-2">
-            {['אודות', 'שירותים', 'למי זה מתאים?', 'דרושים'].map((item, i) => {
-              const sectionId = ['about', 'services', 'audience', 'careers'][i];
+            {['אודות', 'שירותים', 'למי זה מתאים?', 'דרושים', 'שאלות ותשובות'].map((item, i) => {
+              const sectionId = ['about', 'services', 'audience', 'careers', 'faq'][i];
+              const isActive = activeSection === sectionId;
               return (
-                <button key={item} onClick={() => scrollToSection(sectionId)} className="text-right text-slate-700 py-3 px-4 hover:bg-slate-50 rounded-xl transition-colors font-medium border-b border-slate-50 last:border-0">
+                <button
+                  key={item}
+                  onClick={() => scrollToSection(sectionId)}
+                  className={`text-right py-3 px-4 rounded-xl transition-all font-medium border-b border-slate-50 last:border-0 hover:bg-slate-50 hover:text-sky-600 ${isActive ? 'text-sky-600 bg-sky-50 font-bold' : 'text-slate-700'}`}
+                >
                   {item}
                 </button>
               );
             })}
-            <button onClick={() => scrollToSection('contact')} className="mt-2 bg-sky-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-sky-200">צור קשר</button>
+            <button
+              onClick={() => scrollToSection('contact')}
+              className={`text-right py-3 px-4 rounded-xl transition-all font-medium hover:bg-slate-50 hover:text-sky-600 ${activeSection === 'contact' ? 'text-sky-600 bg-sky-50 font-bold' : 'text-slate-700'}`}
+            >
+              צור קשר
+            </button>
           </div>
         </div>
       </nav>
@@ -699,35 +745,34 @@ export default function App() {
               </div>
             </Reveal>
             <Reveal direction="up" delay={300}>
-              <h1 className="text-4xl md:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
-                טיפול מקצועי, <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-l from-sky-300 to-white">רגיש ובטוח.</span>
+              <h1 className="text-4xl md:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight whitespace-pre-line">
+                {config?.content?.heroTitle || <>טיפול מקצועי, <br /><span className="text-transparent bg-clip-text bg-gradient-to-l from-sky-300 to-white">רגיש ובטוח.</span></>}
               </h1>
             </Reveal>
             <Reveal direction="up" delay={500}>
               <p className="text-lg md:text-xl text-slate-200/90 mb-10 max-w-lg leading-relaxed md:ml-auto">
-                ב<strong>"לב שליו"</strong> אנו מאמינים שכל אדם זכאי לטיפול אמין, אישי ומכבד. עם צוות אחיות ומטפלות מוסמכות, אנחנו כאן בשבילכם, בבית שלכם.
+                {config?.content?.heroSubtitle || <>ב<strong>"לב שליו"</strong> אנו מאמינים שכל אדם זכאי לטיפול אמין, אישי ומכבד. עם צוות אחיות ומטפלות מוסמכות, אנחנו כאן בשבילכם, בבית שלכם.</>}
               </p>
             </Reveal>
             <Reveal direction="up" delay={700}>
-              <div className="flex flex-col sm:flex-row gap-5 justify-center md:justify-start">
-                <Button variant="red" onClick={() => scrollToSection('contact')} className="text-lg px-10 animate-zoom-loop">
-                  שיחת ייעוץ חינם
+              <div className="flex flex-col gap-4 w-full md:flex-row md:gap-5 md:justify-start md:w-auto">
+                <Button variant="primary" onClick={() => scrollToSection('contact')} className="text-lg px-10 w-full md:w-auto">
+                  {config?.content?.ctaButtonText || "שיחת ייעוץ חינם"}
                 </Button>
-                <Button variant="outline" href="tel:0527242507" className="text-lg">
+                <Button variant="outline" href="tel:0527242507" className="text-lg w-full md:w-auto">
                   <Phone className="w-5 h-5 ml-2.5" />
-                  052-724-2507
+                  {config?.content?.contactPhone || "052-724-2507"}
                 </Button>
               </div>
             </Reveal>
           </div>
 
           {/* Hero Image / Illustration */}
-          <div className="md:w-1/2 flex justify-center relative w-full px-4 md:px-0">
-            <Reveal direction="left" delay={500} className="w-full max-w-lg">
+          <div className="md:w-1/2 flex justify-center relative w-full">
+            <Reveal direction="left" delay={500} className="w-full max-w-lg mb-4 md:mb-0">
               <div className="relative">
                 {/* Main Card */}
-                <div className="bg-slate-900/80 p-4 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-white/10 shadow-2xl relative z-10 overflow-hidden group transition-colors duration-500">
+                <div className="bg-slate-900/80 p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-white/10 shadow-2xl relative z-10 overflow-hidden group transition-colors duration-500 mx-auto w-full">
                   <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                   <div className="space-y-3 md:space-y-6">
@@ -768,7 +813,7 @@ export default function App() {
       <section id="about" className="py-24 container mx-auto px-6">
         <div className="grid md:grid-cols-2 gap-20 items-center">
           <Reveal direction="right">
-            <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl group bg-slate-100">
+            <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl group bg-slate-100 w-full mx-auto">
               <Carousel
                 images={[
                   {
@@ -1132,10 +1177,10 @@ export default function App() {
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.008-.57-.008-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
                 </svg>
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all duration-300">
+              <a href="https://www.facebook.com/share/1E4mPpQeTa/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-blue-600 hover:text-white transition-all duration-300">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-pink-600 hover:text-white transition-all duration-300">
+              <a href="https://www.instagram.com/lev.shaleev?igsh=ZXJwNHJ3eWtjeGk2&utm_source=qr" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-pink-600 hover:text-white transition-all duration-300">
                 <Instagram className="w-5 h-5" />
               </a>
               <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-black hover:text-white transition-all duration-300 border border-slate-700 hover:border-white/20">

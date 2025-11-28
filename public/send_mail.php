@@ -27,6 +27,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $headers = "From: noreply@levshalev.co.il"; // Replace with your domain email
 
     if (mail($to, $email_subject, $email_body, $headers)) {
+        // Webhook Logic
+        $configFile = '../data/site_config.json';
+        if (file_exists($configFile)) {
+            $config = json_decode(file_get_contents($configFile), true);
+            if (!empty($config['webhooks']['contactForm'])) {
+                $webhookUrl = $config['webhooks']['contactForm'];
+                $webhookData = [
+                    'name' => $name,
+                    'phone' => $phone,
+                    'subject' => $subject,
+                    'message' => $message,
+                    'timestamp' => date('Y-m-d H:i:s')
+                ];
+
+                $ch = curl_init($webhookUrl);
+                curl_setopt($ch, CURLOPT_POST, 1);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($webhookData));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_exec($ch);
+                curl_close($ch);
+            }
+        }
+
         http_response_code(200);
         echo json_encode(["message" => "Email sent successfully."]);
     } else {
